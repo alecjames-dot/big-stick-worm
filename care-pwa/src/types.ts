@@ -21,6 +21,16 @@ export type WormTrait   = 'sleepy' | 'hyper' | 'grumpy' | 'chill' | 'bubbly' | '
 export type WormStage   = 'baby' | 'adult' | 'elder';
 export type WormExpression = 'happy' | 'neutral' | 'sad' | 'sick';
 
+// Each worm friend entry — retained for future benefits
+export interface WormFriend {
+  token: string;         // their owner_token (their worm's identity)
+  firstMetAt: number;   // ms timestamp of first meeting
+  lastMetAt: number;    // ms timestamp of most recent meeting
+  meetCount: number;    // total number of times you've scanned each other
+}
+
+export type AddFriendResult = 'added' | 'reunited' | 'self' | 'invalid';
+
 export interface WormState {
   id: string;
   token: string;
@@ -36,11 +46,13 @@ export interface WormState {
   xp: number;
   createdAt: number;     // ms timestamp
   lastChecked: number;   // ms timestamp — used for decay
-  lowMoodSince: number | null; // ms timestamp when mood first dropped below 20
+  lowMoodSince: number | null;
   feedCount: number;
   gameCount: number;
   loginStreak: number;
   lastLoginDay: string;  // ISO date string YYYY-MM-DD
+  friends: WormFriend[];
+  totalFriendMeets: number; // lifetime meeting counter for future milestones
 }
 
 export const COLOR_MAP: Record<WormColor, string> = {

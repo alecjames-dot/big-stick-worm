@@ -8,6 +8,7 @@ interface CareScreenProps {
   onFeed: () => void;
   onCuddle: () => void;
   onOpenGames: () => void;
+  onOpenFriends: () => void;
   onHeal: () => void;
 }
 
@@ -75,7 +76,7 @@ function XpBar({ xp, stage }: { xp: number; stage: WormState['stage'] }) {
   );
 }
 
-export function CareScreen({ worm, onFeed, onCuddle, onOpenGames, onHeal }: CareScreenProps) {
+export function CareScreen({ worm, onFeed, onCuddle, onOpenGames, onOpenFriends, onHeal }: CareScreenProps) {
   const color    = COLOR_MAP[worm.color];
   const glow     = GLOW_MAP[worm.color];
   const expr     = deriveExpression(worm);
@@ -130,11 +131,29 @@ export function CareScreen({ worm, onFeed, onCuddle, onOpenGames, onHeal }: Care
             </span>
           )}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 4 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
           <StageBadge stage={worm.stage} />
-          <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 6, color: 'rgba(150,150,200,0.4)' }}>
-            🔥 {worm.loginStreak}d
-          </span>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontFamily: "'Press Start 2P', monospace", fontSize: 6, color: 'rgba(150,150,200,0.4)' }}>
+              🔥 {worm.loginStreak}d
+            </span>
+            <button
+              onClick={onOpenFriends}
+              style={{
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: 6,
+                background: 'rgba(255,0,204,0.1)',
+                border: '1px solid rgba(255,0,204,0.35)',
+                borderRadius: 3,
+                color: '#ff00cc',
+                padding: '4px 8px',
+                cursor: 'pointer',
+                lineHeight: 1.4,
+              }}
+            >
+              🪱 {worm.friends.length}
+            </button>
+          </div>
         </div>
       </div>
 

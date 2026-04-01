@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   type WormState,
   type WormStage,
+  type AddFriendResult,
   MOOD_DECAY_PER_MS,
   HUNGER_DECAY_PER_MS,
   SICK_THRESHOLD_MS,
@@ -94,6 +95,8 @@ function makeFreshWorm(token: string): WormState {
     gameCount: 0,
     loginStreak: 1,
     lastLoginDay: new Date().toISOString().slice(0, 10),
+    friends: [],
+    totalFriendMeets: 0,
   };
 }
 
@@ -191,5 +194,39 @@ export function useWorm(token: string | null) {
     });
   }, []);
 
-  return { worm, feed, cuddle, completeGame, heal };
+  const addFriend = useCallback((friendToken: string): AddFriendResult => {
+    if (!worm) return 'invalid';
+    if (!friendToken || typeof friendToken !== 'string') return 'invalid';
+    if (friendToken === worm.token) return 'self';
+
+    let result: AddFriendResult = 'added';
+
+    setWorm((prev) => {
+      if (!prev) return prev;
+      const now = Date.now();
+      const existing = prev.friends.find((f) => f.token === friendToken);
+
+      const updatedFriends = existing
+        ? prev.friends.map((f) =>
+            f.token === friendToken
+              ? { ...f, lastMetAt: now, meetCount: f.meetCount + 1 }
+              : f
+          )
+        : [...prev.friends, { token: friendToken, firstMetAt: now, lastMetAt: now, meetCount: 1 }];
+
+      result = existing ? 'reunited' : 'added';
+
+      return {
+        ...prev,
+        friends: updatedFriends,
+        totalFriendMeets: prev.totalFriendMeets + 1,
+        mood: clamp(prev.mood + 10), // meeting a friend boosts mood
+        xp: prev.xp + 5,
+      };
+    });
+
+    return result;
+  }, [worm]);
+
+  return { worm, feed, cuddle, completeGame, heal, addFriend };
 }

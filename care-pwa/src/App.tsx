@@ -6,9 +6,10 @@ import { GameMenu } from './components/games/GameMenu';
 import { WiggleRace } from './components/games/WiggleRace';
 import { BugCatch } from './components/games/BugCatch';
 import { MemoryMunch } from './components/games/MemoryMunch';
+import { FriendsScreen } from './components/FriendsScreen';
 import type { GameId, GameResult } from './components/games/gameTypes';
 
-type Screen = 'care' | 'game-menu' | GameId;
+type Screen = 'care' | 'game-menu' | 'friends' | GameId;
 
 function getToken(): string | null {
   const params = new URLSearchParams(window.location.search);
@@ -23,7 +24,7 @@ function getToken(): string | null {
 
 export default function App() {
   const token = useMemo(() => getToken(), []);
-  const { worm, feed, cuddle, completeGame, heal } = useWorm(token);
+  const { worm, feed, cuddle, completeGame, heal, addFriend } = useWorm(token);
   const [screen, setScreen] = useState<Screen>('care');
 
   if (!token || !worm) return <WelcomeScreen />;
@@ -42,11 +43,20 @@ export default function App() {
         onFeed={feed}
         onCuddle={cuddle}
         onOpenGames={() => setScreen('game-menu')}
+        onOpenFriends={() => setScreen('friends')}
         onHeal={heal}
       />
 
       {screen === 'game-menu' && (
         <GameMenu onSelect={(id) => setScreen(id)} onClose={() => setScreen('care')} />
+      )}
+      {screen === 'friends' && (
+        <FriendsScreen
+          myToken={worm.token}
+          friends={worm.friends}
+          onAddFriend={addFriend}
+          onClose={() => setScreen('care')}
+        />
       )}
       {screen === 'wiggle-race'  && <WiggleRace  {...gameProps} />}
       {screen === 'bug-catch'    && <BugCatch    {...gameProps} />}
