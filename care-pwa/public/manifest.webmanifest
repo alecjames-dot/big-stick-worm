@@ -1,0 +1,13 @@
+{
+  "name": "Worm Care",
+  "short_name": "WormCare",
+  "description": "Care for your digital worm companion",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#06000f",
+  "background_color": "#06000f",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
